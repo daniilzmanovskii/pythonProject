@@ -1,11 +1,13 @@
-import random
-
+import sys
 import pygame
+import pygame_menu
 
 pygame.init()
 
 display_width = 800
 display_height = 600
+menu_width = 800
+menu_height = 600
 
 display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Star Dodge')
@@ -15,7 +17,7 @@ player1 = pygame.image.load('playerShip1_red.png')
 width = 60
 height = 100
 x = display_width // 3
-y = display_height - height - 100
+y = display_height - height - 50
 
 c_x = display_width - 50
 c_y = display_height - 20 - 100
@@ -23,7 +25,19 @@ c_w = 20
 c_h = 70
 
 
-class Cactus():
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
+def start_menu(theme=pygame_menu.themes.THEME_BLUE):
+    menu = pygame_menu.Menu('Star Dodge', menu_width, menu_height, theme=theme)
+    menu.add.button('PLAY', start_game)
+    menu.add.button('EXIT', pygame_menu.events.EXIT)
+    menu.mainloop(display)
+
+
+class Cactus(pygame.sprite.Sprite):
     def __init__(self, x1, y1, width1, height1, speed_x, speed_y, image):
         self.x = x1
         self.y = y1
@@ -79,16 +93,6 @@ def pause():
         pygame.display.update()
 
 
-width = 60
-height = 100
-x = display_width // 3
-y = display_height - height - 30
-
-c_x = display_width - 50
-c_y = display_height - 170
-c_w = 20
-c_h = 70
-
 cactus_arr_left = []
 cactus_arr_right = []
 
@@ -119,24 +123,61 @@ run = True
 create_cactus_arr(cactus_arr_left)
 create_cactus_arrR(cactus_arr_right)
 
-while run:
-    pygame.time.delay(35)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+font1 = pygame.font.SysFont('microsofttaile', 32)
+follow1 = font1.render('Game Over! Press ENTER to play  again. Escape to exit!', 1, (173, 255, 47))
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and x > 15:
-        x -= 15
-    if keys[pygame.K_RIGHT] and x < 785 - width:
-        x += 15
-    if keys[pygame.K_ESCAPE]:
-        pause()
 
-    display.blit(fon1, (0, 0))
-    draw_array(cactus_arr_left)
-    draw_arrayR(cactus_arr_right)
+def game_over():
+    stopped = True
+    while stopped:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
 
-    display.blit(player1, (x, y))
-    pygame.display.update()
+        display.blit(follow1, (20, 270))
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_RETURN]:
+            return True
+        if keys[pygame.K_ESCAPE]:
+            pygame.quit()
+            quit()
+
+        pygame.display.update()
+
+
+def start_game():
+    global x, y
+    while run:
+        pygame.time.delay(30)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and x > 15:
+            x -= 15
+        if keys[pygame.K_RIGHT] and x < 785 - width:
+            x += 15
+        if keys[pygame.K_DOWN]:
+            y += 10
+        if keys[pygame.K_UP]:
+            y -= 10
+        pressed = pygame.mouse.get_pressed()
+        if pressed[1]:
+            game_over()
+        if keys[pygame.K_ESCAPE]:
+            pause()
+
+        display.blit(fon1, (0, 0))
+        draw_array(cactus_arr_left)
+        draw_arrayR(cactus_arr_right)
+
+        display.blit(player1, (x, y))
+        pygame.display.update()
+
+
+start_menu()
