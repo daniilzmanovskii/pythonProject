@@ -25,7 +25,7 @@ c_y = display_height - 20 - 100
 c_w = 20
 c_h = 70
 
-meteors = pygame.sprite.Group
+meteors = pygame.sprite.Group()
 
 meteors.add(Meteor(display_width // 2, 10, 'BBrown.png'))
 #meteors.add(Meteor(display_width - 50, 5, 'MGrey.png'))
