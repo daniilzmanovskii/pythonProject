@@ -1,6 +1,7 @@
 import sys
 import pygame
 from Meteor import Meteor
+import random
 import pygame_menu
 
 pygame.init()
@@ -13,7 +14,8 @@ menu_height = 600
 display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Star Dodge')
 fon1 = pygame.image.load('darkPurple.png')
-player1 = pygame.image.load('playerShip1_red.png')
+player1 = pygame.image.load('playerShip1_red.png').convert_alpha()
+player_rect = player1.get_rect(centerx=display_width//2, bottom=display_height-5)
 
 width = 60
 height = 100
@@ -25,12 +27,18 @@ c_y = display_height - 20 - 100
 c_w = 20
 c_h = 70
 
+all_sprites = pygame.sprite.Group()
 meteors = pygame.sprite.Group()
+all_sprites.add(meteors)
 
-meteors.add(Meteor(display_width // 2, 10, 'BBrown.png'))
-#meteors.add(Meteor(display_width - 50, 5, 'MGrey.png'))
-#meteors.add(Meteor(display_width - 400, 7, 'MBrown.png'))
-#meteors.add(Meteor(display_width, 9, 'BGrey.png'))
+meteors.add(Meteor(random.randint(0, 150), 10, 'BBrown.png'))
+meteors.add(Meteor(random.randint(150, 300), 11, 'MGrey.png'))
+meteors.add(Meteor(random.randint(300, 450), 14, 'MBrown.png'))
+meteors.add(Meteor(random.randint(450, 600), 9, 'BGrey.png'))
+meteors.add(Meteor(random.randint(600, 800), 17, 'SBrown.png'))
+meteors.add(Meteor(random.randint(0, 800), 8, 'SGrey.png'))
+meteors.add(Meteor(random.randint(0, 800), 9, 'BBrown.png'))
+meteors.add(Meteor(random.randint(0, 800), 15, 'MGrey.png'))
 
 
 def terminate():
@@ -49,6 +57,12 @@ font = pygame.font.SysFont('microsofttaile', 32)
 follow = font.render('Pause! Press ENTER to continue', 1, (173, 255, 47))
 
 
+#def collide_meteors():
+    #for meteor in meteors():
+        #if player_rect.collidepoint(meteor.rect.center):
+            #pygame.quit()
+
+
 def pause():
     paused = True
     while paused:
@@ -64,10 +78,6 @@ def pause():
             paused = False
 
         pygame.display.update()
-
-
-cactus_arr_left = []
-cactus_arr_right = []
 
 
 run = True
@@ -111,9 +121,9 @@ def start_game():
             x -= 15
         if keys[pygame.K_RIGHT] and x < 785 - width:
             x += 15
-        if keys[pygame.K_DOWN]:
+        if keys[pygame.K_DOWN] and y < 560 - height:
             y += 10
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] and y > 30:
             y -= 10
         pressed = pygame.mouse.get_pressed()
         if pressed[1]:
@@ -121,6 +131,7 @@ def start_game():
         if keys[pygame.K_ESCAPE]:
             pause()
 
+        #collide_meteors()
         display.blit(fon1, (0, 0))
         display.blit(player1, (x, y))
         meteors.draw(display)
